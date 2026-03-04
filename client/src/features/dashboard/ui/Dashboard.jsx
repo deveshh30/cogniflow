@@ -5,6 +5,7 @@ import DashCard from "./DashCard";
 import EmptyState from "./EmptyState";
 import ActiveGoal from "./ActiveGoal";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus, X } from "lucide-react";
 import API from "../../../services/api";
 
 const Dashboard = () => {
@@ -13,6 +14,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [goalInput, setGoalInput] = useState("");
   const [deadlineInput, setDeadlineInput] = useState("");
+  const [subTasks, setSubTasks] = useState([]);
+  const [subTaskInput, setSubTaskInput] = useState("");
 
   // 1. Calculate stats
   const stats = useMemo(() => {
@@ -73,12 +76,23 @@ const Dashboard = () => {
     };
   }, []);
 
+  const handleAddSubTask = () => {
+    if (!subTaskInput.trim()) return;
+    setSubTasks([...subTasks, { text: subTaskInput.trim(), completed: false }]);
+    setSubTaskInput("");
+  };
+
+  const handleRemoveSubTask = (index) => {
+    setSubTasks(subTasks.filter((_, i) => i !== index));
+  };
+
   const handleAddGoal = async () => {
     if (!goalInput.trim()) return;
     try {
       const payload = {
         title: goalInput.trim(),
         priority: priority,
+        subTask: subTasks,
         ...(deadlineInput && { deadline: deadlineInput }),
       };
       const { data } = await API.post("/goals/add", payload);
@@ -89,6 +103,8 @@ const Dashboard = () => {
       setIsmodalOpen(false);
       setGoalInput("");
       setDeadlineInput("");
+      setSubTasks([]);
+      setSubTaskInput("");
     } catch (err) {
       alert("Error adding goal");
     }
@@ -236,6 +252,39 @@ const Dashboard = () => {
                   onChange={(e) => setDeadlineInput(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl focus:border-blue-500 outline-none transition-all text-zinc-300"
                 />
+
+                {/* Subtasks Section */}
+                <div className="space-y-2">
+                  <p className="text-gray-400 text-sm">Add Steps (Subtasks)</p>
+                  <div className="flex gap-2">
+                    <input
+                      placeholder="e.g. Complete Node.js basics"
+                      value={subTaskInput}
+                      onChange={(e) => setSubTaskInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSubTask())}
+                      className="flex-1 bg-white/5 border border-white/10 px-4 py-3 rounded-xl focus:border-blue-500 outline-none transition-all text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddSubTask}
+                      className="px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all"
+                    >
+                      <Plus size={18} />
+                    </button>
+                  </div>
+                  {subTasks.length > 0 && (
+                    <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
+                      {subTasks.map((task, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white/5 px-4 py-2 rounded-xl">
+                          <span className="text-sm text-zinc-300">{task.text}</span>
+                          <button onClick={() => handleRemoveSubTask(index)} className="text-zinc-500 hover:text-red-400">
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 <p className="text-gray-400 text-sm mb-3">Set Priority</p>
                 <div className="flex gap-2 mb-6">

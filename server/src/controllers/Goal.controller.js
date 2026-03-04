@@ -3,10 +3,12 @@ import Goal from "../models/Goal.js";
 
 export const addGoal = async (req, res) => {
   try {
-    const { title, deadline } = req.body;
+    const { title, deadline, priority, subTask } = req.body;
     
     const newGoal = await Goal.create({
       title,
+      priority: priority || "Medium",
+      subTask: subTask || [],
       ...(deadline && { deadline: new Date(deadline) })
     });
 
@@ -20,7 +22,7 @@ export const addGoal = async (req, res) => {
 
 export const updateGoalProgress = async (req, res) => {
   const { id } = req.params;
-  const { progress } = req.body;
+  const {subTask , progress } = req.body;
 
   let status = "At Risk";
   if (progress >= 60) status = "On Track";
@@ -29,7 +31,7 @@ export const updateGoalProgress = async (req, res) => {
   try {
     const updatedGoal = await Goal.findByIdAndUpdate(
       id, 
-      { progress, status }, 
+      {subTask,  progress, status }, 
       { new: true }
     );
     res.json(updatedGoal);
