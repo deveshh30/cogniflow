@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [deadlineInput, setDeadlineInput] = useState("");
   const [subTasks, setSubTasks] = useState([]);
   const [subTaskInput, setSubTaskInput] = useState("");
+  const [priority, setPriority] = useState("Medium");
 
   // 1. Calculate stats
   const stats = useMemo(() => {
@@ -130,7 +131,6 @@ const Dashboard = () => {
     return weights[b.priority || "Medium"] - weights[a.priority || "Medium"];
   });
   const completedGoals = goals.filter((g) => (g.progress || 0) === 100);
-  const [priority, setPriority] = useState("Medium")
 
   return (
     <div className="min-h-screen bg-[#050505] relative overflow-hidden pb-20 font-sans">
