@@ -19,7 +19,7 @@ function AppContent() {
   const goals = []; 
 
   return (
-    <Router basename="/COGNIFLOW">
+    <Router basename="/">
       <main className="min-h-screen bg-[#050505]">
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
