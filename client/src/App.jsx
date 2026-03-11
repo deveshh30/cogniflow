@@ -7,6 +7,7 @@ import SignUp from './features/auth/SignUp';
 import Dashboard from './features/dashboard/ui/Dashboard';
 import CompletedGoals from './features/dashboard/ui/CompletedGoal';
 import Profile from './features/dashboard/ui/Profile';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 function AppContent() {
   // 1. Pull the user from your AuthContext
@@ -27,13 +28,23 @@ function AppContent() {
           <Route path="/signup" element={<SignUp />} />
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/archive" element={<CompletedGoals />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/archive" element={
+            <ProtectedRoute>
+              <CompletedGoals />
+            </ProtectedRoute>
+          } />
           <Route path="/profile" element={
-            <Profile 
-              goals={goals} // Pass the goals array
-              user={user}   // Pass the user object from context
-            />
+            <ProtectedRoute>
+              <Profile 
+                goals={goals}
+                user={user}
+              />
+            </ProtectedRoute>
           } />
 
           {/* Fallback */}

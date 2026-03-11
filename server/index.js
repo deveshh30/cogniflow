@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import express from 'express';
 import http from 'http';
 import { Server } from "socket.io";
+import JWT from "jsonwebtoken";
 import authRoutes from './src/routes/Auth.Routes.js';
 import GoalRoutes from "./src/routes/Goal.routes.js";
 
@@ -41,7 +42,18 @@ app.use('/api/goals' , GoalRoutes);
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.join('goals-room'); 
+  // Authenticate user and join their personal room
+  const token = socket.handshake.auth?.token;
+  if (token) {
+    try {
+      const decoded = JWT.verify(token, process.env.JWT_SECRET);
+      socket.userId = decoded.id;
+      socket.join(decoded.id); // Join user-specific room
+      console.log(`User ${decoded.id} joined their personal room`);
+    } catch (err) {
+      console.log('Socket auth failed:', err.message);
+    }
+  }
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);

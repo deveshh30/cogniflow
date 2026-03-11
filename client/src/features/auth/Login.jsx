@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { Mail, Lock, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -67,13 +68,20 @@ const Login = () => {
             <div className="group relative">
               <Lock className="absolute left-4 top-3.5 text-zinc-500 group-focus-within:text-zinc-300 transition-colors" size={20} />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                className="w-full bg-zinc-900/40 border border-zinc-800/50 rounded-xl py-3.5 px-12 text-white focus:outline-none focus:ring-2 focus:ring-zinc-700/40 focus:border-zinc-600/50 transition-all placeholder:text-zinc-600"
+                className="w-full bg-zinc-900/40 border border-zinc-800/50 rounded-xl py-3.5 px-12 pr-12 text-white focus:outline-none focus:ring-2 focus:ring-zinc-700/40 focus:border-zinc-600/50 transition-all placeholder:text-zinc-600"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3.5 text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
 
             <button

@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, UserPlus, Sparkles } from 'lucide-react';
+import { User, Mail, Lock, UserPlus, Sparkles, Eye, EyeOff } from 'lucide-react';
 import API from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -54,13 +55,22 @@ const SignUp = () => {
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
             />
-            <input
-              type="password"
-              placeholder="Create Password"
-              className="w-full bg-zinc-900/40 border border-zinc-800/50 rounded-xl py-4 px-6 text-white focus:outline-none focus:border-zinc-600/50 transition-all placeholder:text-zinc-600"
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Create Password"
+                className="w-full bg-zinc-900/40 border border-zinc-800/50 rounded-xl py-4 px-6 pr-12 text-white focus:outline-none focus:border-zinc-600/50 transition-all placeholder:text-zinc-600"
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-4 text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
             <button
               type="submit"

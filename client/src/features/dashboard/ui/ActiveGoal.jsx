@@ -31,12 +31,12 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
     // 3. Update UI state immediately
     setLocalSubTasks(updatedTasks);
     setGoals(prev => prev.map(g => 
-      g._id === id ? { ...g, subTask: updatedTasks, progress: newProgress } : g
+      g._id === id ? { ...g, subTask: updatedTasks, progress: newProgress, status: newProgress === 100 ? 'Completed' : (newProgress >= 60 ? 'On Track' : 'At Risk') } : g
     ));
 
     // 4. SYNC TO DATABASE
     try {
-      await API.patch(`/goals/update/${id}`, { 
+      await API.patch(`/goals/progress/${id}`, { 
         subTask: updatedTasks,
         progress: newProgress 
       });
@@ -55,11 +55,11 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
     setLocalSubTasks(updatedTasks);
     setNewSubTaskText("");
     setGoals(prev => prev.map(g => 
-      g._id === id ? { ...g, subTask: updatedTasks, progress: newProgress } : g
+      g._id === id ? { ...g, subTask: updatedTasks, progress: newProgress, status: newProgress === 100 ? 'Completed' : (newProgress >= 60 ? 'On Track' : 'At Risk') } : g
     ));
 
     try {
-      await API.patch(`/goals/update/${id}`, { 
+      await API.patch(`/goals/progress/${id}`, { 
         subTask: updatedTasks,
         progress: newProgress 
       });
