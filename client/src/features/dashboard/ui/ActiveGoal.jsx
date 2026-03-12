@@ -20,6 +20,10 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
   };
 
   const handleToggleSubTask = async (index) => {
+    // Save previous state for rollback
+    const previousTasks = [...localSubTasks];
+    const previousProgress = calculateProgress(previousTasks);
+    
     // 1. Update local array by index
     const updatedTasks = localSubTasks.map((st, i) => 
       i === index ? { ...st, completed: !st.completed } : st
@@ -28,7 +32,7 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
     // 2. Calculate new progress based on subtasks
     const newProgress = calculateProgress(updatedTasks);
 
-    // 3. Update UI state immediately
+    // 3. Update UI state immediately (optimistic)
     setLocalSubTasks(updatedTasks);
     setGoals(prev => prev.map(g => 
       g._id === id ? { ...g, subTask: updatedTasks, progress: newProgress, status: newProgress === 100 ? 'Completed' : (newProgress >= 60 ? 'On Track' : 'At Risk') } : g
@@ -42,13 +46,23 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
       });
     } catch (err) {
       console.error("Failed to sync subtask", err);
+      // Rollback on failure
+      setLocalSubTasks(previousTasks);
+      setGoals(prev => prev.map(g => 
+        g._id === id ? { ...g, subTask: previousTasks, progress: previousProgress, status: previousProgress === 100 ? 'Completed' : (previousProgress >= 60 ? 'On Track' : 'At Risk') } : g
+      ));
     }
   };
 
   const handleAddSubTask = async () => {
     if (!newSubTaskText.trim()) return;
     
-    const newTask = { text: newSubTaskText.trim(), completed: false };
+    // Save previous state for rollback
+    const previousTasks = [...localSubTasks];
+    const previousProgress = calculateProgress(previousTasks);
+    const taskText = newSubTaskText.trim();
+    
+    const newTask = { text: taskText, completed: false };
     const updatedTasks = [...localSubTasks, newTask];
     const newProgress = calculateProgress(updatedTasks);
     
@@ -65,6 +79,12 @@ const ActiveGoal = ({ id, title, progress: serverProgress, status, deadline, sub
       });
     } catch (err) {
       console.error("Failed to add subtask", err);
+      // Rollback on failure
+      setLocalSubTasks(previousTasks);
+      setNewSubTaskText(taskText);
+      setGoals(prev => prev.map(g => 
+        g._id === id ? { ...g, subTask: previousTasks, progress: previousProgress, status: previousProgress === 100 ? 'Completed' : (previousProgress >= 60 ? 'On Track' : 'At Risk') } : g
+      ));
     }
   };
 

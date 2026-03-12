@@ -78,7 +78,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-3.5 text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="absolute right-4 top-3.5 text-zinc-400 hover:text-white transition-colors z-10"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>

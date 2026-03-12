@@ -53,13 +53,13 @@ const efficiency = (goal) => {
   const finishDate = new Date(goal.updatedAt);
   const deadline = new Date(goal.deadline);
   
-  if (!goal.deadline) return { text: "No Deadline Set", color: "zinc" };
+  if (!goal.deadline) return { text: "No Deadline Set", className: "bg-zinc-500/10 text-zinc-500" };
   
   if (finishDate <= deadline) {
-    return { text: "Ahead of Schedule", color: "emerald" };
+    return { text: "Ahead of Schedule", className: "bg-emerald-500/10 text-emerald-500" };
   } else {
     const daysLate = Math.ceil((finishDate - deadline) / (1000 * 60 * 60 * 24));
-    return { text: `${daysLate} Days Overdue`, color: "amber" };
+    return { text: `${daysLate} Days Overdue`, className: "bg-amber-500/10 text-amber-500" };
   }
 };
 
@@ -109,8 +109,8 @@ const efficiency = (goal) => {
                         <span className="text-[10px] text-zinc-500">
                           ⏱️ {Math.ceil((new Date(goal.updatedAt) - new Date(goal.createdAt)) / (1000*60*60*24))} days
                         </span>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full bg-${efficiency.color}-500/10 text-${efficiency.color}-500`}>
-                          {efficiency.text}
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${efficiency(goal).className}`}>
+                          {efficiency(goal).text}
                         </span>
                       </div>
                       <p className="text-xs text-zinc-500">
